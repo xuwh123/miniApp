@@ -118,11 +118,15 @@ const Login: React.FC = () => {
     try {
       // 登录
       const msg = await login({ ...values, type });
-      if (msg.status === 'ok') {
+      if (msg.code === 0) {
         const defaultLoginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
           defaultMessage: '登录成功！',
         });
+
+        //localStorage token
+        localStorage.setItem('token', msg.data.access_token);
+
         message.success(defaultLoginSuccessMessage);
         await fetchUserInfo();
         const urlParams = new URL(window.location.href).searchParams;
@@ -217,13 +221,13 @@ const Login: React.FC = () => {
           {type === 'account' && (
             <>
               <ProFormText
-                name="username"
+                name="account"
                 fieldProps={{
                   size: 'large',
                   prefix: <UserOutlined />,
                 }}
                 placeholder={intl.formatMessage({
-                  id: 'pages.login.username.placeholder',
+                  id: 'pages.login.account.placeholder',
                   defaultMessage: '用户名: admin or user',
                 })}
                 rules={[
@@ -231,7 +235,7 @@ const Login: React.FC = () => {
                     required: true,
                     message: (
                       <FormattedMessage
-                        id="pages.login.username.required"
+                        id="pages.login.account.required"
                         defaultMessage="请输入用户名!"
                       />
                     ),
