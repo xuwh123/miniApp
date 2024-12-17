@@ -1,11 +1,12 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Equal } from 'typeorm';
 import { User } from '../entities/user.entity';
-import * as bcrypt from 'bcrypt';
+import { Controller, Delete, Param, ParseIntPipe } from '@nestjs/common';
 
 @Injectable()
 export class UserService {
+
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
@@ -19,17 +20,22 @@ export class UserService {
     return this.userRepository.findOne({ where: { login_account: account } });
   }
 
-  getHello(): string {
-    return 'Hello World user !';
+  async queryList(account: string): Promise<User[] | null> {
+    return this.userRepository.find({ where: { deleted: 0 } });
   }
 
-  async validateUser(account: string, password: string) {
-    const user = await this.findByLoginAccount(account);
-    console.log(user);
-    if (user && await bcrypt.compare(password, user.login_password)) {
-      return user;
-    }
-    throw new UnauthorizedException('用户名或密码错误');
+  async add(user: User): Promise<User | null> {
+    return this.userRepository.save(user);
   }
+
+  async edit(user: User): Promise<User | null> {
+    return this.userRepository.save(user);
+  }
+
+  delete(id: number) {
+    return this.userRepository.update(id, { deleted: 1 });
+  }
+
 }
+
 

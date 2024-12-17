@@ -13,7 +13,6 @@ export const SelectLang = () => {
     />
   );
 };
-
 export const Question = () => {
   return (
     <div

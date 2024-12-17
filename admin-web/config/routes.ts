@@ -52,6 +52,20 @@ export default [
     component: './TableList',
   },
   {
+    name: 'list.user-list',
+    icon: 'table',
+    path: '/user/list',
+    component: './System/User/UserList',
+  },
+  {
+    name: 'list.depart-list',
+    icon: 'table',
+    path: '/depart/list',
+    component: './System/depart/DepartList',
+  },
+
+
+  {
     path: '/',
     redirect: '/welcome',
   },

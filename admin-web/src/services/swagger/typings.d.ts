@@ -2,7 +2,15 @@ declare namespace API {
   type ApiResponse = {
     code?: number;
     type?: string;
-    message?: string;
+    msg?: string;
+    data?: any;
+  };
+
+  type ApiResponsePage<T> = {
+    code?: number;
+    type?: string;
+    msg?: string;
+    data?: T[];
   };
 
   type Category = {
