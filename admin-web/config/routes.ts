@@ -63,8 +63,16 @@ export default [
     path: '/depart/list',
     component: './System/depart/DepartList',
   },
-
-
+  {
+    name: 'list.goods-list',
+    icon: 'table',
+    path: '/goods/list',
+    component: './Goods/GoodsList',
+  },
+  {
+    path: '/goods/edit/:id',
+    component: './Goods/GoodsAllEditForm',
+  },
   {
     path: '/',
     redirect: '/welcome',

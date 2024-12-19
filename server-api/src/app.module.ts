@@ -14,6 +14,9 @@ import { AuthController } from './controllers/AuthController';
 import { DepartService } from './services/DepartService';
 import { Department } from './entities/depart.entity';
 import { DepartmentController } from './controllers/DepartController';
+import { GoodsController } from './controllers/GoodsController';
+import { GoodsService } from './services/GoodsService';
+import { Goods } from './entities/goods.entity';
 
 @Module({
   imports: [
@@ -31,19 +34,20 @@ import { DepartmentController } from './controllers/DepartController';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
-        entities: [User,Department],
+        entities: [User,Department,Goods],
         synchronize: true,
         autoLoadEntities: true,
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User,Department]),
+    TypeOrmModule.forFeature([User,Department,Goods]),
   ],
-  controllers: [AppController, AuthController, UserController, DepartmentController],
+  controllers: [AppController, AuthController, UserController, DepartmentController,GoodsController],
   providers: [
     AppService,
     UserService,
     DepartService,
+    GoodsService,
     JwtStrategy,
     {
       provide: APP_GUARD,

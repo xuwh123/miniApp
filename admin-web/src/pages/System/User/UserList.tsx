@@ -1,14 +1,17 @@
 import {
   ProForm,
+  ProFormRadio,
   ProFormText,
+  ProFormTreeSelect,
   ProTable,
   type ActionType,
   type ProColumns,
 } from '@ant-design/pro-components';
-import { Button, Input, message, Modal, Space } from 'antd';
-import React, { useRef, useState } from 'react';
+import { Button,  message, Modal } from 'antd';
+import React, { useEffect, useRef, useState } from 'react';
 import { addUser, deleteUser, editUser, queryUserList } from '@/services/user';
 import { FormInstance } from 'antd/lib';
+import {queryDepartList} from '@/services/swagger/depart';
 
 const TableList: React.FC = () => {
   const actionRef = useRef<ActionType>();
@@ -16,7 +19,44 @@ const TableList: React.FC = () => {
   const [openModal, setOpenModal] = useState(false);
   const fromRef = useRef<FormInstance>();
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [departments,setDepartments]=useState<any[]>([]);
+
+  const convertToTree=(data:any[],parentId:number|null=null):any[]=>{
+    return data
+    .filter((item)=> item.parent_id===parentId)
+   .map((item)=>({
+    ...item,
+    title:item.department_name,
+    value:item.department_id,
+    chidren:convertToTree(data,item.department_id),
+
+   }));
+  };
+
+useEffect(()=>{
+  const fetchDepartments=async()=>{
+    const res=await queryDepartList({
+      pageNo:1,
+      pageSize:100,
+    });
+    if(res.code===0){
+      setDepartments(convertToTree(res.data||[]));
+    }
+  };
+  fetchDepartments();
+},[]);
+
+ const getDepartmentNameById=(departmentId:number|undeined)=>{
+  const department=departments.find((dept)=>dept.value===departmentId)
+  return department?department.title:'';
+
+ };
+
+
+
+
   const columns: ProColumns<API.Sys.UserInfo>[] = [
+
     {
       title: '用户id',
       dataIndex: 'user_id',
@@ -30,11 +70,15 @@ const TableList: React.FC = () => {
     {
       title: '登录手机号',
       dataIndex: 'phone_number',
+      hideInSearch: true,
+
     },
 
     {
       title: '登录账号',
       dataIndex: 'login_account',
+      hideInSearch: true,
+      align: 'center',
     },
 
     {
@@ -47,40 +91,50 @@ const TableList: React.FC = () => {
       title: '最后登录时间',
       dataIndex: 'updated_time',
       valueType: 'dateTime',
+      hideInSearch: true,
+
     },
     {
       title: '账号状态',
       dataIndex: 'status',
+      hideInSearch: true,
+
       valueEnum: {
-        0: '禁用',
-        1: '启用',
+        0: {text: '禁用', status: 'Error'},
+        1: {text: '启用', status: 'Success'},
       },
     },
+    {
+      title:'部门',
+      dataIndex: 'department_name',
+      align:'center',
+      hideInSearch: true,
+
+      render:(_,record)=>getDepartmentNameById(record.department_id),
+      },
     {
       title: '操作',
       valueType: 'option',
       render: (_, record) => [
-        <Space>
-          <a
-            type='link'
-            onClick={() => {
-              setCurrentRow(record);
-              setOpenModal(true);
-            }}
-          >
-            编辑
-          </a>
-          <a
-            key='delete'
-            onClick={() => {
-              setCurrentRow(record);
-              setDeleteModalVisible(true);
-            }}
-          >
-            删除
-          </a>
-        </Space>
-        ,
+        <a
+          key="edit"
+          type="link"
+          onClick={() => {
+            setCurrentRow(record);
+            setOpenModal(true);
+          }}
+        >
+          编辑
+        </a>,
+        <a
+          key="delete"
+          onClick={() => {
+            setCurrentRow(record);
+            setDeleteModalVisible(true);
+          }}
+        >
+          删除
+        </a>
       ],
     },
   ];
@@ -160,29 +214,44 @@ const TableList: React.FC = () => {
           };
         }}
       />
-      <Modal
-        title="新增用户"
-        open={openModal}
-        onCancel={() => {
-          setOpenModal(false);
-          fromRef.current?.resetFields();
-        }}
-        onOk={() => {
-          fromRef.current?.submit();
-        }}
-      >
-        <ProForm
-          formRef={fromRef}
-          submitter={false}
-          initialValues={currentRow}
-          onFinish={headerSubmit}
+      {openModal && (
+        <Modal
+          title="新增用户"
+          open={openModal}
+          onCancel={() => {
+            setOpenModal(false);
+            fromRef.current?.resetFields();
+          }}
+          onOk={() => {
+            fromRef.current?.submit();
+          }}
         >
-          <ProFormText name="username" label="用户名" />
-          <ProFormText name="phone_number" label="手机号" />
-          <ProFormText name="login_account" label="登录账号" />
-          <ProFormText name="login_password" label="密码" />
-        </ProForm>
-      </Modal>
+          <ProForm
+            formRef={fromRef}
+            submitter={false}
+            initialValues={currentRow}
+            onFinish={headerSubmit}
+          >
+            <ProFormText name="username" label="用户名" />
+            <ProFormText name="phone_number" label="手机号" />
+            <ProFormText name="login_account" label="登录账号" />
+            <ProFormRadio.Group
+              name="status"
+              label="状态"
+              options={[
+                { label: '启用', value: 1 },
+                { label: '禁用', value: 0 },
+              ]}
+            />
+            {currentRow?.user_id ? <></> : <ProFormText name="login_password" label="密码" />}
+          <ProFormTreeSelect
+           label="部门"
+           name="department_id"
+           request={async()=>departments}
+                 />
+          </ProForm>
+        </Modal>
+      )}
       <Modal
         open={deleteModalVisible}
         onCancel={() => setDeleteModalVisible(false)}

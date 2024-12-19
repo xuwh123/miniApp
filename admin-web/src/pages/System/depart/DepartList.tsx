@@ -52,6 +52,7 @@ const DepartListPage: React.FC = () => {
     {
       title: '操作',
       dataIndex: 'action',
+      align:'center',
       render: (_, record) => (
         <Space>
           <a
@@ -134,6 +135,7 @@ const DepartListPage: React.FC = () => {
         }}
         actionRef={actionRef}
       />
+      {openModal&&(
       <Modal
         title={currentRow ? '编辑部门' : '新增部门'}
         open={openModal}
@@ -165,7 +167,7 @@ const DepartListPage: React.FC = () => {
 
           <ProFormText label="部门名称" name="department_name" />
         </ProForm>
-      </Modal>
+      </Modal>)}
 
     </>
   );
