@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { GoodsImage } from './goods-image.entity';
+import { IsNumber, Min } from 'class-validator';
 
 @Entity('goods')
 export class Goods {
@@ -40,8 +42,11 @@ export class Goods {
     precision: 10,
     scale: 2,
     nullable: false,
+    default: 0,
     comment: '商品售价'
   })
+  @IsNumber()
+  @Min(0)
   sale_price: number;
 
   @Column({
@@ -49,8 +54,11 @@ export class Goods {
     precision: 10,
     scale: 2,
     nullable: false,
+    default: 0,
     comment: '市场价'
   })
+  @IsNumber()
+  @Min(0)
   market_price: number;
 
   @Column({
@@ -127,8 +135,11 @@ export class Goods {
   })
   deleted: number;
 
+
+
   // 非数据库字段，用于关联查询
   category?: any;
-  images?: any[];
   recommends?: any[];
+
+  images: GoodsImage[];
 }

@@ -7,6 +7,7 @@ import * as store from './store';
 import * as user from './user';
 import * as depart from './depart';
 import * as goodsAll from './goodsAll';
+import * as GoodsCategory from './goodsCategory';
 
 
 export default {
@@ -15,4 +16,5 @@ export default {
   user,
   depart,
   goodsAll,
+  GoodsCategory,
 };

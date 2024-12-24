@@ -1,43 +1,78 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('sys_department')
+@Entity('department')
 export class Department {
   @PrimaryGeneratedColumn()
   department_id: number;
 
   @Column({
-    name: 'department_name',
     type: 'varchar',
     length: 50,
-    nullable: false
+    nullable: false,
+    comment: '部门名称'
   })
   department_name: string;
 
-  @Column({ nullable: true })
+  @Column({
+    type: 'int',
+    default: 0,
+    comment: '父级ID'
+  })
   parent_id: number;
 
-  @Column({ nullable: true })
-  created_by: number;
-
-  @Column({ nullable: true })
-  updated_by: number;
+  @Column({
+    type: 'int',
+    default: 0,
+    comment: '排序'
+  })
+  sort: number;
 
   @Column({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP'
+    type: 'varchar',
+    length: 200,
+    nullable: true,
+    comment: '描述'
   })
-  created_time: Date;
+  description: string;
 
   @Column({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP'
+    type: 'varchar',
+    length: 50,
+    nullable: true,
+    comment: '负责人'
   })
-  updated_time: Date;
+  leader: string;
 
-  @Column({ default: 0 })
+  @Column({
+    type: 'varchar',
+    length: 20,
+    nullable: true,
+    comment: '联系电话'
+  })
+  phone: string;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+    nullable: true,
+    comment: '邮箱'
+  })
+  email: string;
+
+  @Column({
+    type: 'tinyint',
+    default: 1,
+    comment: '状态：0-禁用，1-启用'
+  })
+  status: number;
+
+  @Column({
+    type: 'tinyint',
+    default: 0,
+    comment: '是否删除：0-未删除，1-已删除'
+  })
   deleted: number;
 
-  @Column({ default: 1 })
-  status: number;
+  // 非数据库字段，用于构建树形结构
+  children?: Department[];
 }

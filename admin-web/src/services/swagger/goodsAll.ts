@@ -13,7 +13,7 @@ export async function queryGoodsAllList(
   },
   options?: { [key: string]: any },
 ) {
-  return request<API.ApiResponsePage<any>>('/api/goods/list', {
+  return request<API.ApiResponsePage<any>>(`'/api/goods/list'`, {
     method: 'GET',
     params: {
       ...params,
@@ -40,6 +40,15 @@ export async function deleteGoods(id: number, options?: { [key: string]: any }) 
   return request<API.ApiResponsePage<any>>('/api/goods/delete', {
     method: 'DELETE',
     params: { id: id },
+    ...(options || {}),
+  });
+}
+export async function queryGoodsById(id: number, options?: { [key: string]: any }) {
+  return request<API.ApiResponsePage<any>>('/api/goods/info', {
+    method: 'GET',
+    params: {
+      id: id,
+    },
     ...(options || {}),
   });
 }

@@ -17,6 +17,12 @@ import { DepartmentController } from './controllers/DepartController';
 import { GoodsController } from './controllers/GoodsController';
 import { GoodsService } from './services/GoodsService';
 import { Goods } from './entities/goods.entity';
+import { UploadController } from './controllers/UploadController';
+import { GoodsImage } from './entities/goods-image.entity';
+import { GoodsCategoryService } from './services/GoodsCategoryService';
+import { GoodsCategory } from './entities/GoodsCategory.entity';
+import { CategoryController } from './controllers/CategoryController';
+
 
 @Module({
   imports: [
@@ -34,20 +40,21 @@ import { Goods } from './entities/goods.entity';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
-        entities: [User,Department,Goods],
+        entities: [User,Department,Goods,GoodsImage,GoodsCategory],
         synchronize: true,
         autoLoadEntities: true,
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User,Department,Goods]),
+    TypeOrmModule.forFeature([User,Department,Goods,GoodsImage,GoodsCategory,]),
   ],
-  controllers: [AppController, AuthController, UserController, DepartmentController,GoodsController],
+  controllers: [AppController, AuthController, UserController, DepartmentController,GoodsController, UploadController, CategoryController],
   providers: [
     AppService,
     UserService,
     DepartService,
     GoodsService,
+    GoodsCategoryService,
     JwtStrategy,
     {
       provide: APP_GUARD,

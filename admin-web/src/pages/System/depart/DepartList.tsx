@@ -1,19 +1,29 @@
 import { editDepart, addDepart, queryDepartList, deleteDepart } from '@/services/swagger/depart';
-import { ActionType, ProColumns, ProForm, ProFormText, ProFormTreeSelect, ProTable } from '@ant-design/pro-components';
+import {
+  ActionType,
+  ProColumns,
+  ProForm,
+  ProFormText,
+  ProFormTreeSelect,
+  ProTable,
+} from '@ant-design/pro-components';
 import { Button, message, Modal, Popconfirm, Space } from 'antd';
 import { FormInstance } from 'antd/lib';
 import { useRef, useState } from 'react';
 
- const convertToTree=(data:any[],parentId:number| null=null):any[]=>{
-   return data
-   .filter((item)=> item.parent_id===parentId)
-    .map((item)=> ({
-      ...item,
-     title:item.department_name,
-     value:item.department_id,
-      children:convertToTree(data,item.department_id),
-    }));
-   };
+const convertToTree = (data: any[], parent_id: number | null = null): any[] => {
+  return data
+    .filter((item) => item.parent_id === parent_id)
+    .map((item) => {
+      let childrens = convertToTree(data, item.parent_id);
+      return {
+        ...item,
+        label: item.department_name,
+        value: item.parent_id,
+        children: childrens.length > 0 ? childrens : undefined,
+      };
+    });
+};
 const DepartListPage: React.FC = () => {
   const [openModal, setOpenModal] = useState(false);
   const [currentRow, setCurrentRow] = useState();
@@ -45,14 +55,29 @@ const DepartListPage: React.FC = () => {
       dataIndex: 'department_name',
     },
     {
-       title: '上级部门',
-       dataIndex:'parent_id',
-       valueType: 'treeSelect',
+      title: '上级部门',
+      dataIndex: 'parent_id ',
+      valueType: 'treeSelect',
+      proFieldProps: {
+        request: async () => {
+          const { data } = await queryDepartList({});
+          let rst = data.map((item: any) => {
+            console.log(item);
+            return {
+              label: item.department_name,
+              value: item.parent_id,
+              key: item.parent_id,
+            };
+          });
+          console.log('rst');
+          return rst;
+        },
       },
+    },
     {
       title: '操作',
       dataIndex: 'action',
-      align:'center',
+      align: 'center',
       render: (_, record) => (
         <Space>
           <a
@@ -65,15 +90,15 @@ const DepartListPage: React.FC = () => {
             编辑
           </a>
           <Popconfirm
-        title="确定要删除该部门吗?"
-        onConfirm={() => {
-          handleDelete(record.department_id);
-        }}
-        okText="确定"
-        cancelText="取消"
-      >
-        <a key="delete">删除</a>
-      </Popconfirm>
+            title="确定要删除该部门吗?"
+            onConfirm={() => {
+              handleDelete(record.department_id);
+            }}
+            okText="确定"
+            cancelText="取消"
+          >
+            <a key="delete">删除</a>
+          </Popconfirm>
         </Space>
       ),
     },
@@ -128,47 +153,47 @@ const DepartListPage: React.FC = () => {
             pageSize: params.pageSize,
           });
           return {
-            data: convertToTree(res.data||[]),
-            success: res.code == 0,
+            data: convertToTree(res.data || [],0),
+            success: res.code === 0,
             total: res.data?.length,
           };
         }}
         actionRef={actionRef}
       />
-      {openModal&&(
-      <Modal
-        title={currentRow ? '编辑部门' : '新增部门'}
-        open={openModal}
-        onCancel={() => {
-          setOpenModal(false);
-          formRef.current?.resetFields();
-        }}
-        onOk={() => {
-          formRef.current?.submit();
-        }}
-      >
-        <ProForm
-          submitter={false}
-          formRef={formRef}
-          initialValues={currentRow}
-          onFinish={handerFinish}
+      {openModal && (
+        <Modal
+          title={currentRow ? '编辑部门' : '新增部门'}
+          open={openModal}
+          onCancel={() => {
+            setOpenModal(false);
+          }}
+          onOk={() => {
+            formRef.current?.submit();
+          }}
         >
-            <ProFormTreeSelect
-              label="上级部门"
-              name="parent_id"
-              request={async () => {
-                const res = await queryDepartList({
-                  pageNo: 1,
-                  pageSize: 100,
-                });
-                return convertToTree(res.data||[]);
-                }}
-           />
-
-          <ProFormText label="部门名称" name="department_name" />
-        </ProForm>
-      </Modal>)}
-
+          <ProForm
+            submitter={false}
+            formRef={formRef}
+            initialValues={currentRow}
+            onFinish={handerFinish}
+          >
+           <ProFormTreeSelect
+                         label="上级部门"
+                         name="parent_id"
+                         request={async () => {
+                           const res = await queryDepartList({
+                             pageNo: 1,
+                             pageSize: 100,
+                           });
+                           return [
+                             { value: 0, label: '顶级部门', children: convertToTree(res.data || [], 0) },
+                           ];
+                         }}
+                         />
+            <ProFormText label="部门名称" name="department_name" />
+          </ProForm>
+        </Modal>
+      )}
     </>
   );
 };

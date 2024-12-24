@@ -2,94 +2,69 @@ import { addGoods, editGoods, queryGoodsAllList } from '@/services/swagger/goods
 import { ActionType, ProColumns, ProForm, ProFormText, ProTable } from '@ant-design/pro-components';
 import { Button, message, Modal, Space } from 'antd';
 import { useRef, useState } from 'react';
-import { Navigate } from '@umijs/max';
+import { history, request } from '@umijs/max';
 const GoodsAll: React.FC = () => {
-  const [currentRow, setCurrentRow] = useState();
   const [openModal, setOpenModal] = useState(false);
-  const fromRef=useRef<ActionType>();
-
-const headerSubmit =async (values: any) => {
-    const hide= message.loading('保存中...');
-    try {
-      if (currentRow) {
-        editGoods({...currentRow, ...values}).then((res) => {
-            hide();
-            if (res.code === 0) {
-              message.success('修改成功');
-              fromRef.current?.reload();
-            }
-            setOpenModal(false);
-            setCurrentRow(undefined);
-        });
-      }else{
-        addGoods({...(currentRow||{}),...values}).then((res)=>{
-            hide();
-            if (res.code === 0) {
-              message.success('新增成功');
-              fromRef.current?.reload();
-            }
-
-        })
-      }
-    }catch (error) {
-      hide()
-      message.error('保存失败');
-    }
-  };
-
-
-
+  const actionRef = useRef();
 
   const columns: ProColumns[] = [
     {
       title: 'ID',
       dataIndex: 'goods_id',
     },
+
     {
-      title: '排序',
-      dataIndex: 'sort',
+      title: '商品名称',
+      dataIndex: 'goods_name',
     },
     {
       title: '分类',
       dataIndex: 'category_id',
     },
     {
-      title: '商品名称',
-      dataIndex: 'goods_name',
-    },
-    {
       title: '售价',
       dataIndex: 'sale_price',
+      valueType: 'money',
     },
     {
       title: '库存',
       dataIndex: 'total_stock',
+      valueType: 'digit',
     },
     {
       title: '已售',
       dataIndex: 'virtual_sales',
+      valueType: 'digit',
     },
     {
       title: '状态',
       dataIndex: 'status',
     },
     {
+      title: '排序',
+      dataIndex: 'sort',
+    },
+    {
       title: '添加时间',
       dataIndex: 'created_time',
+      valueType: 'dateTime',
     },
     {
       title: '操作',
       dataIndex: 'action',
       render: (_, record) => {
-        <Space>
-          <a
-            type="link"
-            onClick={() => {
-              setCurrentRow(record)
-              setOpenModal(true)
-            }}
-          >编辑</a>
-        </Space>;
+        return (
+          <Space>
+            <a
+              type="link"
+              onClick={() => {
+                history.push(`/goods/edit/${record.goods_id}`);
+              }}
+            >
+              编辑
+            </a>
+          </Space>
+        );
       },
     },
   ];
@@ -98,12 +73,17 @@ const headerSubmit =async (values: any) => {
     <>
       <ProTable
         columns={columns}
-
-        headerTitle={<Button type="primary"
-          onClick={()=>{
-            setCurrentRow(undefined);
-            setOpenModal(true);
-          }}>添加商品</Button>}
+        headerTitle={
+          <Button
+            type="primary"
+            onClick={() => {
+              history.push(`/goods/edit`);
+            }}
+          >
+            添加商品
+          </Button>
+        }
+        params={{ status: 1 }}
         request={async (params: any) => {
           const res = await queryGoodsAllList({
             ...params,
@@ -112,22 +92,21 @@ const headerSubmit =async (values: any) => {
           });
           return {
             data: res.data,
-            success: res.code == 0,
-            total: res.data.length,
+            success: res.code === 0,
+            total: res.totalCount,
           };
         }}
+        actionRef={actionRef}
       ></ProTable>
       <Modal
-       open={openModal}
-       onCancel={()=>{
-        setOpenModal(false)
-       }}
-       onOk={()=>{
-
-       }}>
-
-      </Modal>
-
+        open={openModal}
+        onCancel={() => {
+          setOpenModal(false);
+        }}
+        onOk={() => {
+          setOpenModal(false);
+        }}
+      ></Modal>
     </>
   );
 };

@@ -74,6 +74,16 @@ export default [
     component: './Goods/GoodsAllEditForm',
   },
   {
+    path: '/goods/edit',
+    component: './Goods/GoodsAllEditForm',
+  },
+  {
+    name: 'list.goods-category',
+    icon: 'table',
+    path: '/goods/category',
+    component: './Goods/GoodsCategory',
+  },
+  {
     path: '/',
     redirect: '/welcome',
   },

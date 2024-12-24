@@ -24,6 +24,8 @@ export class AuthController {
   @Post('/accountLogin')
   async accountLogin(@Body() loginDto: LoginDto) {
     // 从数据库中查找用户
+    // console.log(await bcrypt.hash(loginDto.password, 10));
+
     const user = await this.userService.findByLoginAccount(loginDto.account);
     if (!user) {
       return ResponseModel.error('用户不存在',401);

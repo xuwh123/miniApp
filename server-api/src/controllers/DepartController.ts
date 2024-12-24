@@ -30,6 +30,10 @@ export class DepartmentController {
 
   @Post('add')
   async add(@Body() department: Department): Promise<ResponseModel<Department>> {
+    if (!department.department_name) {
+      return ResponseModel.error('部门名称不能为空');
+    }
+
     const result = await this.departmentService.add(department);
     return ResponseModel.success(result);
   }
