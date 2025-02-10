@@ -10,7 +10,7 @@ import { UserService } from 'src/services/UserService';
 import { LoginDto } from '../dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Public } from '../decorators/public.decorator';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { ResponseModel } from 'src/common/response.model';
 
 @Controller('/auth')

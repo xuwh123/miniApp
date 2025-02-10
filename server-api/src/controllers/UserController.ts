@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { User } from 'src/entities/user.entity';
 import { UserService } from 'src/services/UserService';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { ResponseModel } from 'src/common/response.model';
 
 @Controller('/user')
