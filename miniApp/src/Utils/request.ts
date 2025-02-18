@@ -1,5 +1,5 @@
 import Taro from "@tarojs/taro";
-const apiHost = "http://loalhost:8000";
+const apiHost = "http://localhost:3000";
 
 async function request(url, method, params, data) {
   return new Promise((resolve, reject) => {

@@ -11,6 +11,7 @@ export default defineAppConfig({
     "pages/shoptitle/index",
     "pages/test",
     "pages/canvas",
+    "pages/bindPhone",
   ],
   tabBar: {
     color: "#333",

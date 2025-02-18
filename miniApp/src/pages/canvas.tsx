@@ -36,10 +36,13 @@ const SharePoster = () => {
         ctx.font = "30px Arial";
         ctx.fillStyle = "#000";
         ctx.textAlign = "center";
-        ctx.fillText("分享海报", 100, 50);
+        ctx.fillText("分享海报", 60, 50);
+        ctx.fillText("这是一个分享海报示例", 200, 100);
 
         try {
-          const img = await loadImage("");
+          const img = await loadImage(
+            "https://p3-flow-imagex-sign.byteimg.com/ocean-cloud-tos/image_skill/229265a0-8129-459d-8abc-87aca42d82b5_1739413626891454364~tplv-a9rns2rl98-web-watermark-v2.png?rk3s=b14c611d&x-expires=1770949626&x-signature=sUlQwathiMI6kyw2%2BxuLBwPjvfs%3D"
+          );
           ctx.drawImage(
             img,
             (canvas.width - img.width) / 2,

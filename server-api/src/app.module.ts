@@ -22,6 +22,7 @@ import { GoodsImage } from './entities/goods-image.entity';
 import { GoodsCategoryService } from './services/GoodsCategoryService';
 import { GoodsCategory } from './entities/GoodsCategory.entity';
 import { CategoryController } from './controllers/CategoryController';
+import { PaymentController } from './controllers/PaymentController';
 
 
 @Module({
@@ -48,7 +49,7 @@ import { CategoryController } from './controllers/CategoryController';
     }),
     TypeOrmModule.forFeature([User,Department,Goods,GoodsImage,GoodsCategory,]),
   ],
-  controllers: [AppController, AuthController, UserController, DepartmentController,GoodsController, UploadController, CategoryController],
+  controllers: [AppController, AuthController, UserController, DepartmentController,GoodsController, UploadController, CategoryController,PaymentController],
   providers: [
     AppService,
     UserService,
